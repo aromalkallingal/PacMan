@@ -17,26 +17,6 @@ let pacmanLeftImage;
 let pacmanRightImage;
 let wallImage;
 
-
-
-
-window.onload = function() {
-    board = document.getElementById("board");
-    board.height = boardHeight;
-    board.width = boardWidth;
-    context = board.getContext("2d"); //used for drawing on the board
-
-    loadImages();
-    loadMap();
-    console.log(walls.size);
-    console.log(foods.size);
-    console.log(ghosts.size);
-    update();
-    document.addEventListener("keyup", movePacman)
-
- 
-}
-
 const tileMap = [
     "XXXXXXXXXXXXXXXXXXX",
     "X        X        X",
@@ -65,6 +45,34 @@ const walls = new Set();
 const foods = new Set();
 const ghosts = new Set();
 let pacman;
+
+const directions = ['U', 'D', 'L', 'R'];
+
+
+
+
+window.onload = function() {
+    board = document.getElementById("board");
+    board.height = boardHeight;
+    board.width = boardWidth;
+    context = board.getContext("2d"); //used for drawing on the board
+
+    loadImages();
+    loadMap();
+    console.log(walls.size);
+    console.log(foods.size);
+    console.log(ghosts.size);
+    for (let ghost of ghosts.values()) {
+        const newDirection = directions[Math.gloor(Math.random()*4)];
+    }
+    update();
+    document.addEventListener("keyup", movePacman)
+
+ 
+}
+
+
+
 
 function loadImages() { 
     wallImage = new Image();
@@ -169,24 +177,38 @@ function move() {
 
 function movePacman(e) {
     if (e.code == "ArrowUp" || e.code == "KeyW") {
-        pacman.updateDirection('U')
+        pacman.updateDirection('U');
     }
     else if (e.code == "ArrowDown" || e.code == "KeyS") {
-        pacman.updateDirection('D')
+        pacman.updateDirection('D');
     }
     else if (e.code == "ArrowLeft" || e.code == "KeyA") {
-        pacman.updateDirection('L')
+        pacman.updateDirection('L');
     }
     else if (e.code == "ArrowRight" || e.code == "KeyD") {
-        pacman.updateDirection('R')
+        pacman.updateDirection('R');
+    }
+
+   //update pacman images
+    if (pacman.direction == 'U') {
+        pacman.image = pacmanUpImage;
+    }
+    else if (pacman.direction == 'D') {
+        pacman.image = pacmanDownImage;
+    }
+    else if (pacman.direction == 'L') {
+        pacman.image = pacmanLeftImage;
+    }
+    else if (pacman.direction == 'R') {
+        pacman.image = pacmanRightImage;
     }
 }
 
 function collision(a, b) {
-    return a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y;
+    return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
+           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
+           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
+           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
 }
 
 class Block {
